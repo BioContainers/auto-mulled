@@ -58,4 +58,4 @@ else
 fi
 
 
-(for i in $(affected_packages); do involucro_params_for $i ; done) | xargs -I XX /bin/sh -c "involucro XX $COMMANDS"
+(for i in $(affected_packages); do involucro_params_for $i ; done) | xargs -I XX /bin/sh -c "./involucro XX $COMMANDS"
