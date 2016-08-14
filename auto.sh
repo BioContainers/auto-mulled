@@ -52,7 +52,7 @@ set -e
 init
 
 if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then
-	COMMANDS="build push"
+	COMMANDS="build" # add push when working
 else
 	COMMANDS="build"
 fi
