@@ -10,7 +10,7 @@ function init() {
 		cd ..
 	else
 		echo "=> cloning remote"
-		git clone --quiet git@github.com:bioconda/bioconda-recipes.git
+		git clone --quiet https://github.com/bioconda/bioconda-recipes.git
 	fi
 
 	echo "---- fetch repository data from anaconda ----"
