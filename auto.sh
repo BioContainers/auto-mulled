@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 function init() {
 	echo "---- fetch recipes ----"
 	if [ -d bioconda-recipes ]; then
@@ -51,8 +50,8 @@ function involucro_params_for() {
 set -e
 init
 
-if [ "$TRAVIS_SECURE_ENV_VARS" = "true" ]; then
-	COMMANDS="build" # add push when working
+if [ "$TRAVIS_SECURE_ENV_VARS" = "true" -a "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+	COMMANDS="build push"
 else
 	COMMANDS="build"
 fi
