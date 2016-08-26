@@ -67,13 +67,12 @@ if [ "$TRAVIS_SECURE_ENV_VARS" = "true" -a "$TRAVIS_BRANCH" = "master" -a "$TRAV
 			echo "}"
 		)
 
-		curl --silent --fail \
+		curl --fail \
 			-X POST \
 			-HAuthorization:Bearer\ $QUAY_TOKEN \
 			-d $JSON \
 			-HContent-Type:application/json \
 			https://quay.io/api/v1/repository \
-			|| echo -n " FAILED!"
 		echo
 	done
 
