@@ -57,7 +57,7 @@ if [ "$TRAVIS_SECURE_ENV_VARS" = "true" -a "$TRAVIS_BRANCH" = "master" -a "$TRAV
 
 	echo "---- create repositories on quay ----"
 	for i in $AFFECTED; do
-		echo -n "* $i"
+		echo -n "* $i : "
 		(
 			echo "{"
 			echo '"namespace": "'$NAMESPACE'",'
@@ -70,7 +70,8 @@ if [ "$TRAVIS_SECURE_ENV_VARS" = "true" -a "$TRAVIS_BRANCH" = "master" -a "$TRAV
 			-HAuthorization:Bearer\ $QUAY_TOKEN \
 			-d @- \
 			-HContent-Type:application/json \
-			https://quay.io/api/v1/repository
+			https://quay.io/api/v1/repository \
+			|| echo "  FAILED!"
 		echo
 	done
 
