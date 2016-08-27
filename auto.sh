@@ -20,7 +20,7 @@ function init() {
 
 function affected_packages() {
 	cd bioconda-recipes
-	git log --name-only --pretty="" --since="1.2 days ago" | grep -E '^recipes/.*/meta.yaml' | sed 's#recipes/\([^/]*\)/.*#\1#' | sort | uniq
+	git log --name-only --pretty="" --since="25 hours ago" | grep -E '^recipes/.*/meta.yaml' | sed 's#recipes/\([^/]*\)/.*#\1#' | sort | uniq
 	cd ..
 }
 
