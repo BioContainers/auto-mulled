@@ -13,7 +13,7 @@ install:
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda --version
-  - conda install conda-build
+  - conda install conda-build -y
   - pip install requests
   - docker --version
   - docker info
