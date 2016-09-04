@@ -7,7 +7,7 @@ inv.task('build')
         .run('rm', '-rf', '/data/dist')
     .using('continuumio/miniconda:latest')
         .withHostConfig({binds = {"build/dist:/usr/local/"}})
-        .run('/bin/sh', '-c', 'conda install --channel bioconda --channel r '
+        .run('/bin/sh', '-c', 'conda install --channel bioconda -c conda-forge --channel r '
             .. VAR.PACKAGE .. '=' .. VAR.VERSION .. '=' .. VAR.BUILD
             .. ' -p /usr/local --copy --yes')
     .wrap('build/dist')
