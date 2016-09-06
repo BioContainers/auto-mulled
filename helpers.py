@@ -11,6 +11,7 @@ Usage:
 """
 
 import os
+import re
 import sys
 import json
 import time
@@ -19,6 +20,12 @@ import subprocess
 from conda_build.metadata import MetaData
 
 CHECK_LAST_HOURS = 25
+
+
+def natural_key(string_):
+    """See http://www.codinghorror.com/blog/archives/001018.html"""
+    return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
+
 
 def get_tests( pkg_path ):
     """
@@ -38,7 +45,8 @@ def get_tests( pkg_path ):
         elif tests_imports and 'python' in requirements:
             tests = ' && '.join('python -c "import %s"' % imp for imp in tests_imports)
         elif tests_imports and ('perl' in requirements or 'perl-threaded' in requirements):
-            tests = ' && '.join("perl -e 'use %s;'" % imp for imp in tests_imports)
+            tests = ' && '.join('''perl -e "use %s;"''' % imp for imp in tests_imports)
+        tests = tests.replace('$R ', 'Rscript ')
     else:
         print('No tests defined for: %s' % pkg_path)
     return tests
@@ -95,7 +103,7 @@ def new_versions( quay, conda ):
     """
     sconda = set(conda)
     squay = set(quay) if quay else set()
-    return sconda.symmetric_difference(squay)
+    return sconda - squay #sconda.symmetric_difference(squay)
 
 
 def run( build_command, build_last_n_versions = 1 ):
@@ -104,10 +112,10 @@ def run( build_command, build_last_n_versions = 1 ):
     pkgs = get_affected_packages()
     for pkg_name, pkg_tests in pkgs:
         c = conda_versions( pkg_name )
+        # only package the most recent N versions
+        c = sorted(c, reverse=True, key=natural_key)[:build_last_n_versions]
         q = quay_versions( pkg_name )
         nvs = new_versions( q, c )
-        # only package the most recent N versions
-        nvs = sorted(list(nvs), reverse=True)[:build_last_n_versions]
         for tag in nvs:
             version = tag.split('--')[0]
             build = tag.split('--')[1]
