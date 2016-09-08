@@ -28,12 +28,12 @@ class QuayDownload():
     def __del__(self):
         pass
 
-    def build_index(self, p_quey_namespace):
+    def build_index(self, p_quay_namespace):
         """This functions creates a index to quickly examine the repositories of a given quay organization."""
         # download all information about the repositories from the
         # given organization in self._quay_namespace
         url = 'https://quay.io/api/v1/repository'
-        parameters = {'public':'true','namespace': p_quey_namespace}
+        parameters = {'public':'true','namespace': p_quay_namespace}
         r = requests.get(url, headers={'Accept-encoding': 'gzip'}, params=parameters,
                             timeout=12)
 
