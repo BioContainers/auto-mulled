@@ -52,7 +52,7 @@ class QuaySearch():
             writer.add_document(title=decoded_request['repositories'][i]['name'], content=decoded_request['repositories'][i]['description'])
         writer.commit()
 
-    def search_repository(self, p_search_string):
+    def search_repository(self, p_search_string, p_non_strict):
         """This function searches matching repositories of an organization.
          Results are displayed with all available versions. Docker download command is given too."""
         # with statement closes searcher after usage.
@@ -64,18 +64,19 @@ class QuaySearch():
 
             results = searcher.search(query)
             
-            # look for spelling errors and use suggestions as a search term too
-            corrector = searcher.corrector("title")
-            alternative_strings =  corrector.suggest(p_search_string, limit=2)
+            if p_non_strict:
+                # look for spelling errors and use suggestions as a search term too
+                corrector = searcher.corrector("title")
+                alternative_strings =  corrector.suggest(p_search_string, limit=2)
 
-            # get all repositories with suggested keywords
-            for i in alternative_strings:
-                search_string = u"*"
-                search_string += i
-                search_string += "*"
-                query = QueryParser("title", self._index.schema).parse(search_string)
-                results_tmp = searcher.search(query)
-                results.extend(results_tmp)
+                # get all repositories with suggested keywords
+                for i in alternative_strings:
+                    search_string = u"*"
+                    search_string += i
+                    search_string += "*"
+                    query = QueryParser("title", self._index.schema).parse(search_string)
+                    results_tmp = searcher.search(query)
+                    results.extend(results_tmp)
            
             # get all versions for the found tools
             dict_results = {}
@@ -86,10 +87,13 @@ class QuaySearch():
                     versions.append(j)
                 dict_results[i['title']] = versions
             
-            print "The query ", '\033[1m' + p_search_string + '\033[0m', " resulted in", len(results) ,"result(s). The search lists the results for ",
-            for i in xrange(len(alternative_strings)):
-                print '\033[1m' + alternative_strings[i] + '\033[0m', ", ",
-            print "too."
+            print "The query ", '\033[1m' + p_search_string + '\033[0m', " resulted in", len(results) ,"result(s).",
+            
+            if p_non_strict:
+                print "The search lists the results for ",
+                for i in xrange(len(alternative_strings)):
+                    print '\033[1m' + alternative_strings[i] + '\033[0m', ", ",
+                print "too."
             for i in dict_results:
                 print i, "\n\t\t\t", 
                 for j in dict_results[i]:
@@ -112,6 +116,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Searches in a given quay organization for a repository')
     parser.add_argument('--organization', dest='organization_string', type=str,
                         help='Change organization. Default is mulled.')
+    parser.add_argument('--non-strict', dest='non_strict_bool', action="store_true",
+                        help='Change organization. Default is mulled.')
     parser.add_argument('search', type=str,
                         help='The name of the tool you want to search for.')        
     args = parser.parse_args()
@@ -122,6 +128,6 @@ if __name__ == "__main__":
     quay.build_index()
 
     if args.search is not None:
-        quay.search_repository(args.search)
+        quay.search_repository(args.search, args.non_strict_bool)
     if os.path.exists("indexdir"):
         shutil.rmtree("indexdir")
