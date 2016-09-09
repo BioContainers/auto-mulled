@@ -119,7 +119,7 @@ def run( build_command, build_last_n_versions = 1 ):
         for tag in nvs:
             version = tag.split('--')[0]
             build = tag.split('--')[1]
-            involucro_cmds.append("""./involucro -set TEST='%s' -set PACKAGE='%s' -set TAG='%s' -set VERSION='%s' -set BUILD='%s' %s """ %
+            involucro_cmds.append("""./involucro -v=2 -set TEST='%s' -set PACKAGE='%s' -set TAG='%s' -set VERSION='%s' -set BUILD='%s' %s """ %
                             (pkg_tests, pkg_name, tag, version, build, build_command))
 
     print '\n'.join(involucro_cmds)
