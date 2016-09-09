@@ -41,7 +41,7 @@ class QuayDownload():
         if os.path.exists("indexdir"):
             shutil.rmtree("indexdir")
         os.mkdir("indexdir")
-        schema = Schema(title=TEXT(stored=True))
+        schema = Schema(title=TEXT(stored=True), content=STORED)
         self._index = create_in("indexdir", schema)
 
         json_decoder = json.JSONDecoder()
@@ -49,17 +49,21 @@ class QuayDownload():
         # print(len(decoded_request))        
         writer = self._index.writer()
         for i in xrange(len(decoded_request['repositories'])):
-            writer.add_document(title=decoded_request['repositories'][i]['name'])
-       
+            writer.add_document(title=decoded_request['repositories'][i]['name'], content=decoded_request['repositories'][i]['description'])
         writer.commit()
 
     def search_repository(self, p_search_string):
+        # with statement closes searcher after usage.
         with self._index.searcher() as searcher:
-            query = QueryParser("title", self._index.schema).parse(p_search_string)
+            search_string = u"*"
+            search_string += p_search_string
+            search_string += "*"
+            query = QueryParser("title", self._index.schema).parse(search_string)
             results = searcher.search(query)
-            print "The query \"", p_search_string, "\" resulted in", len(results) ,"result(s)."
+            print "The query \"", search_string, "\" resulted in", len(results) ,"result(s)."
             for i in results:
                 print i
+            # searcher.close()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Searches in a given quay organization for a repository')
     parser.add_argument('--organization', dest='organization_string', type=str,
