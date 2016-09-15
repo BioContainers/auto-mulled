@@ -1,7 +1,8 @@
-#!/home/wolffj/miniconda2/bin/python2.7
+#!/usr/bin/env python2
 
 # Copyright 2016 Joachim Wolff
 # Mail: wolffj@informatik.uni-freiburg.de
+# License: MIT
 #
 # Chair of Bioinformatics
 # Department of Computer Science
@@ -117,7 +118,8 @@ if __name__ == "__main__":
     parser.add_argument('--organization', dest='organization_string', type=str,
                         help='Change organization. Default is mulled.')
     parser.add_argument('--non-strict', dest='non_strict_bool', action="store_true",
-                        help='Change organization. Default is mulled.')
+                        help='Autocorrection of typos activated. Lists more results but can be confusing.\
+                        For too many queries quay.io blocks the request and the results can be incomplete.')
     parser.add_argument('search', type=str,
                         help='The name of the tool you want to search for.')        
     args = parser.parse_args()
