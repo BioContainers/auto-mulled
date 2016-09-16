@@ -1,4 +1,5 @@
-#!/usr/bin/env python2
+#! /home/wolffj/miniconda2/bin/python
+#/usr/bin/env python2
 
 # Copyright 2016 Joachim Wolff
 # Mail: wolffj@informatik.uni-freiburg.de
@@ -16,7 +17,9 @@ import shutil
 
 import requests
 
-from whoosh.fields import *
+from whoosh.fields import Schema
+from whoosh.fields import TEXT
+from whoosh.fields import STORED
 from whoosh.index import create_in
 from whoosh.qparser import QueryParser
 from whoosh.spelling import Corrector
@@ -49,8 +52,8 @@ class QuaySearch():
         json_decoder = json.JSONDecoder()
         decoded_request = json_decoder.decode(r.text)
         writer = self._index.writer()
-        for i in xrange(len(decoded_request['repositories'])):
-            writer.add_document(title=decoded_request['repositories'][i]['name'], content=decoded_request['repositories'][i]['description'])
+        for repository in decoded_request['repositories']:
+            writer.add_document(title=repository['name'], content=repository['description'])
         writer.commit()
 
     def search_repository(self, p_search_string, p_non_strict):
@@ -58,9 +61,7 @@ class QuaySearch():
          Results are displayed with all available versions. Docker download command is given too."""
         # with statement closes searcher after usage.
         with self._index.searcher() as searcher:
-            search_string = u"*"
-            search_string += p_search_string
-            search_string += "*"
+            search_string = u"*" + u"%s" % p_search_string + u"*"
             query = QueryParser("title", self._index.schema).parse(search_string)
 
             results = searcher.search(query)
@@ -72,9 +73,7 @@ class QuaySearch():
 
                 # get all repositories with suggested keywords
                 for i in alternative_strings:
-                    search_string = u"*"
-                    search_string += i
-                    search_string += "*"
+                    search_string = u"*" + u"%s" % i + u"*"
                     query = QueryParser("title", self._index.schema).parse(search_string)
                     results_tmp = searcher.search(query)
                     results.extend(results_tmp)
@@ -83,17 +82,14 @@ class QuaySearch():
             dict_results = {}
             for i in results:
                 additional_info = self.get_additional_repository_information(i['title'])
-                versions = []
-                for j in additional_info:
-                    versions.append(j)
-                dict_results[i['title']] = versions
+                dict_results[i['title']] = additional_info.keys()
             
             print "The query ", '\033[1m' + p_search_string + '\033[0m', " resulted in", len(results) ,"result(s).",
             
             if p_non_strict:
                 print "The search lists the results for ",
-                for i in xrange(len(alternative_strings)):
-                    print '\033[1m' + alternative_strings[i] + '\033[0m', ", ",
+                for result in alternative_strings:
+                    print '\033[1m' + result + '\033[0m', ", ",
                 print "too."
             for i in dict_results:
                 print i, "\n\t\t\t", 
