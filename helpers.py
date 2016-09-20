@@ -48,7 +48,7 @@ def get_tests( pkg_path ):
             tests = ' && '.join('''perl -e "use %s;"''' % imp for imp in tests_imports)
         tests = tests.replace('$R ', 'Rscript ')
     else:
-        print('No tests defined for: %s' % pkg_path)
+        pass #print('No tests defined for: %s' % pkg_path)
     return tests
 
 
