@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#! /usr/bin/env python
 
 # Copyright 2016 Joachim Wolff
 # Mail: wolffj@informatik.uni-freiburg.de
