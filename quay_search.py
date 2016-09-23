@@ -1,5 +1,4 @@
-#! /home/wolffj/miniconda2/bin/python
-#/usr/bin/env python2
+#/usr/bin/env python
 
 # Copyright 2016 Joachim Wolff
 # Mail: wolffj@informatik.uni-freiburg.de
@@ -61,7 +60,7 @@ class QuaySearch():
          Results are displayed with all available versions. Docker download command is given too."""
         # with statement closes searcher after usage.
         with self._index.searcher() as searcher:
-            search_string = u"*" + u"%s" % p_search_string + u"*"
+            search_string = u"*%s*" % p_search_string
             query = QueryParser("title", self._index.schema).parse(search_string)
 
             results = searcher.search(query)
@@ -73,7 +72,8 @@ class QuaySearch():
 
                 # get all repositories with suggested keywords
                 for i in alternative_strings:
-                    search_string = u"*" + u"%s" % i + u"*"
+                    # search_string = u"*" + u"%s" % i + u"*"
+                    search_string = u"*%s*" % i
                     query = QueryParser("title", self._index.schema).parse(search_string)
                     results_tmp = searcher.search(query)
                     results.extend(results_tmp)
@@ -82,6 +82,7 @@ class QuaySearch():
             dict_results = {}
             for i in results:
                 additional_info = self.get_additional_repository_information(i['title'])
+                print additional_info
                 dict_results[i['title']] = additional_info.keys()
             
             print "The query ", '\033[1m' + p_search_string + '\033[0m', " resulted in", len(results) ,"result(s).",
@@ -98,11 +99,8 @@ class QuaySearch():
                 print "\n"
    
     def get_additional_repository_information(self, p_repository_string):
-        """Function downloads additional information from quay.io to get the tag-filed which includes the version number."""
-        url = 'https://quay.io/api/v1/repository/'
-        url += self._organization
-        url += '/'
-        url += p_repository_string
+        """Function downloads additional information from quay.io to get the tag-field which includes the version number."""
+        url = 'https://quay.io/api/v1/repository/' + u"%s" % self._organization + "/" + u"%s" % p_repository_string
         r = requests.get(url, headers={'Accept-encoding': 'gzip'}, timeout=12)
 
         json_decoder = json.JSONDecoder()
