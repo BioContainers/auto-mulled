@@ -56,7 +56,6 @@ class QuaySearch():
             search_string = "*%s*" % search_string
             query = QueryParser("title", self.index.schema).parse(search_string)
             results = searcher.search(query)
-            print non_strict
             if non_strict:
                 # look for spelling errors and use suggestions as a search term too
                 corrector = searcher.corrector("title")
