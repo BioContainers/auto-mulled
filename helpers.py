@@ -9,6 +9,7 @@ Usage:
 ./helpers.py all
 
 """
+from __future__ import print_function
 
 import os
 import re
@@ -23,14 +24,12 @@ CHECK_LAST_HOURS = 25
 
 
 def natural_key(string_):
-    """See http://www.codinghorror.com/blog/archives/001018.html"""
+    """See http://www.codinghorror.com/blog/archives/001018.html."""
     return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
 
 
-def get_tests( pkg_path ):
-    """
-        extract test cases given a meta.yaml file
-    """
+def get_tests(pkg_path):
+    """Extract test cases given a recipe's meta.yaml file."""
     tests = ""
     input_dir = os.path.dirname( os.path.join( './bioconda-recipes', pkg_path ) )
     recipe_meta = MetaData(input_dir)
@@ -48,24 +47,22 @@ def get_tests( pkg_path ):
             tests = ' && '.join('''perl -e "use %s;"''' % imp for imp in tests_imports)
         tests = tests.replace('$R ', 'Rscript ')
     else:
-        pass #print('No tests defined for: %s' % pkg_path)
+        pass
     return tests
 
 
-def get_pkg_name( pkg_path ):
-    """
-        extracts the package name from a given meta.yaml file
-    """
+def get_pkg_name(pkg_path):
+    """Extract the package name from a given meta.yaml file."""
     input_dir = os.path.dirname( os.path.join( './bioconda-recipes', pkg_path ) )
     recipe_meta = MetaData(input_dir)
     return recipe_meta.get_value('package/name')
 
 
-def get_affected_packages( hours = CHECK_LAST_HOURS):
-    """
-        returns a list of all meta.yaml file that where modified/created in the last X hours
-    """
+def get_affected_packages(hours=CHECK_LAST_HOURS):
+    """Return a list of all meta.yaml file that where modified/created recently.
 
+    Length of time to check for indicated by the ``hours`` parameter.
+    """
     cmd = """cd bioconda-recipes && git log --diff-filter=ACMRTUXB --name-only --pretty="" --since="%s hours ago" | grep -E '^recipes/.*/meta.yaml' | sort | uniq"""
     pkg_list = subprocess.check_output(cmd % hours, shell=True)
     ret = list()
@@ -74,10 +71,9 @@ def get_affected_packages( hours = CHECK_LAST_HOURS):
             ret.append( (get_pkg_name(pkg), get_tests(pkg)) )
     return ret
 
-def conda_versions( pkg_name, file_name='repodata.json' ):
-    """
-        returns all conda version strings of a package name
-    """
+
+def conda_versions(pkg_name, file_name='repodata.json'):
+    """Return all conda version strings for a specified package name."""
     j = json.load(open(file_name))
     ret = list()
     for pkg in j['packages'].values():
@@ -86,10 +82,8 @@ def conda_versions( pkg_name, file_name='repodata.json' ):
     return ret
 
 
-def quay_versions( pkg_name ):
-    """
-        get all version tags from a Docker Image stored on quay.io given a package name
-    """
+def quay_versions(pkg_name):
+    """Get all version tags for a Docker image stored on quay.io for supplied package name."""
     time.sleep(1)
     url = 'https://quay.io/api/v1/repository/mulled/%s' % pkg_name
     response = requests.get(url, timeout=None)
@@ -98,16 +92,14 @@ def quay_versions( pkg_name ):
 
 
 def new_versions( quay, conda ):
-    """
-        calculates the versions that are in conda but not on quay.io
-    """
+    """Calculate the versions that are in conda but not on quay.io."""
     sconda = set(conda)
     squay = set(quay) if quay else set()
-    return sconda - squay #sconda.symmetric_difference(squay)
+    return sconda - squay  # sconda.symmetric_difference(squay)
 
 
-def run( build_command, build_last_n_versions = 1 ):
-
+def run(build_command, build_last_n_versions=1):
+    """Build list of involucro commands (as shell snippet) to run."""
     involucro_cmds = list()
     pkgs = get_affected_packages()
     for pkg_name, pkg_tests in pkgs:
@@ -119,16 +111,23 @@ def run( build_command, build_last_n_versions = 1 ):
         for tag in nvs:
             version = tag.split('--')[0]
             build = tag.split('--')[1]
-            involucro_cmds.append("""./involucro -v=2 -set TEST='%s' -set PACKAGE='%s' -set TAG='%s' -set VERSION='%s' -set BUILD='%s' %s """ %
-                            (pkg_tests, pkg_name, tag, version, build, build_command))
+            involucro_cmds.append(
+                """./involucro -v=2 -set TEST='%s' -set PACKAGE='%s' -set TAG='%s' -set VERSION='%s' -set BUILD='%s' %s """ %
+                (pkg_tests, pkg_name, tag, version, build, build_command)
+            )
 
-    print '\n'.join(involucro_cmds)
+    print('\n'.join(involucro_cmds))
 
 
 def get_pkg_names():
-    print( '\n'.join([pkg_name for pkg_name, pkg_tests in get_affected_packages()]) )
+    """Print package names that would be affected."""
+    print('\n'.join([pkg_name for pkg_name, pkg_tests in get_affected_packages()]))
 
-if __name__ == '__main__':
+
+def main(argv=None):
+    """Main entry-point for the auto-mulled Python helper."""
+    if argv is None:
+        argv = sys.argv
 
     if not os.environ.get('NAMESPACE', False):
         os.environ['NAMESPACE'] = 'mulled'
@@ -139,8 +138,5 @@ if __name__ == '__main__':
         run( ' '.join(sys.argv[1:]) )
 
 
-
-
-
-
-
+if __name__ == '__main__':
+    main()
