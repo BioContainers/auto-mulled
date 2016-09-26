@@ -18,6 +18,8 @@ import json
 import time
 import requests
 import subprocess
+from random import shuffle
+
 from conda_build.metadata import MetaData
 
 CHECK_LAST_HOURS = 25
@@ -102,6 +104,8 @@ def run(build_command, build_last_n_versions=1):
     """Build list of involucro commands (as shell snippet) to run."""
     involucro_cmds = list()
     pkgs = get_affected_packages()
+    # poor man's workaround against failing conda packages, time to move this to bioconda 
+    shuffle(pkgs)
     for pkg_name, pkg_tests in pkgs:
         c = conda_versions( pkg_name )
         # only package the most recent N versions
