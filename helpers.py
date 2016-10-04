@@ -87,7 +87,7 @@ def conda_versions(pkg_name, file_name='repodata.json'):
 def quay_versions(pkg_name):
     """Get all version tags for a Docker image stored on quay.io for supplied package name."""
     time.sleep(1)
-    url = 'https://quay.io/api/v1/repository/mulled/%s' % pkg_name
+    url = 'https://quay.io/api/v1/repository/biocontainers/%s' % pkg_name
     response = requests.get(url, timeout=None)
     data = response.json()
     return [ tag for tag in data['tags'] if tag != 'latest' ]
@@ -134,7 +134,7 @@ def main(argv=None):
         argv = sys.argv
 
     if not os.environ.get('NAMESPACE', False):
-        os.environ['NAMESPACE'] = 'mulled'
+        os.environ['NAMESPACE'] = 'biocontainers'
 
     if len(sys.argv) <= 1:
         get_pkg_names()
