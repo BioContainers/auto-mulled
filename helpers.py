@@ -22,7 +22,7 @@ from random import shuffle
 
 from conda_build.metadata import MetaData
 
-CHECK_LAST_HOURS = 25
+CHECK_LAST_HOURS = 75
 
 
 def natural_key(string_):
