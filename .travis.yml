@@ -1,5 +1,5 @@
 sudo: required
-
+language: python
 services:
   - docker
 
@@ -15,7 +15,7 @@ install:
   - conda --version
   - conda install conda-build -y -c bioconda
   - pip install requests
-  - pip install git+https://github.com/bgruening/galaxy-lib.git@patch-2
+  - pip install git+https://github.com/galaxyproject/galaxy-lib.git
   - docker --version
   - docker info
   - git clone --quiet https://github.com/bioconda/bioconda-recipes.git
