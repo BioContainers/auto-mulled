@@ -13,9 +13,12 @@ install:
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda --version
-  - conda install conda-build -y
+  - conda install conda-build -y -c bioconda
   - pip install requests
+  - pip install git+https://github.com/bgruening/galaxy-lib.git@patch-2
   - docker --version
   - docker info
-
-script: ./auto.sh
+  - git clone --quiet https://github.com/bioconda/bioconda-recipes.git
+  
+  - mulled-build-channel --channel bioconda --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 list
+  - mulled-build-channel --channel bioconda --namespace biocontainers --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 all
