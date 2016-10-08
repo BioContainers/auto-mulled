@@ -46,10 +46,22 @@ mulled-build-channel --channel bioconda --namespace biocontainers \
 3. build a container for your local package
 
   ```sh
-  mulled-build build-and-test 'samtools=3.0' \
+  mulled-build build-and-test 'samtools=3.0--0' \
     --extra-channel file://home/bag/miniconda2/conda-bld/ --test 'samtools --help'
   ```
+  The `--0` indicates the build version of the conda package. It is recommended to specify this number otherwise
+  you will override already exsisting images. For python conda packages this extension might look like this `--py35_1`.
 
+## Build, test and push a conda-forge package to biocontainers
+
+> You need to have write access to the biocontainers repository
+
+```sh
+mulled-build build-and-test 'pandoc=1.17.2--0' --test 'pandoc --help' -n biocontainers
+```
+```sh
+mulled-build push 'pandoc=1.17.2--0' --test 'pandoc --help' -n biocontainers
+```
 
 ToDo:
 -----
