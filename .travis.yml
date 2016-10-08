@@ -13,8 +13,9 @@ install:
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda2/bin:$PATH
   - conda --version
-  - conda install conda-build galaxy-lib -y -c bioconda
+  - conda install conda-build-y -c bioconda
   - pip install requests
+  - pip install git+https://github.com/tangentlabs/django-oscar-paypal.git@patch-2
   - docker --version
   - docker info
   - git clone --quiet https://github.com/bioconda/bioconda-recipes.git
