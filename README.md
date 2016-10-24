@@ -8,7 +8,7 @@ We have developed small utilities around this technology stack which is currentl
 ## Search for containers
 
 ```sh
-mulled-search -s vsearch -o biocontainers
+mulled-search -s deeptools -o biocontainers
 ```
 
 ## Build all packages from bioconda from the last 24h
