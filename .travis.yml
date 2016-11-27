@@ -21,5 +21,5 @@ install:
   - git clone --quiet https://github.com/bioconda/bioconda-recipes.git
 
 script:
-  - mulled-build-channel --channel bioconda --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 list
-  - mulled-build-channel --channel bioconda --namespace biocontainers --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 all
+  - travis_wait 45 mulled-build-channel --channel bioconda --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 list
+  - travis_wait 45 mulled-build-channel --channel bioconda --namespace biocontainers --involucro-path ./involucro --recipes-dir ./bioconda-recipes --diff-hours 25 all
